@@ -1,0 +1,146 @@
+rules_version = '2';
+
+// Theria: Household security rules.
+//
+// These enforce the Manager/Observer boundary independently of any application
+// code. Hiding a button is UX; this file is the actual security boundary
+// (prompt0.md §8.2, §13.2).
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function memberPath(hid) {
+      return /databases/$(database)/documents/households/$(hid)/members/$(request.auth.uid);
+    }
+
+    // Membership doc id IS the uid, so this is a direct get() rather than a
+    // query — rules cannot run queries.
+    function isMember(hid) {
+      return signedIn()
+        && exists(memberPath(hid))
+        && get(memberPath(hid)).data.status == 'ACTIVE';
+    }
+
+    function memberRole(hid) {
+      return get(memberPath(hid)).data.role;
+    }
+
+    function isManager(hid) {
+      return isMember(hid) && memberRole(hid) == 'MANAGER';
+    }
+
+    // A write must not claim to belong to a different household than the one
+    // it is being written into.
+    function scopedCorrectly(hid) {
+      return !('householdId' in request.resource.data)
+        || request.resource.data.householdId == hid;
+    }
+
+    /* ------------------------------------------------ membership index */
+
+    // A user must discover their own households before they can read any
+    // household document. Readable and writable only by that user.
+    match /userHouseholds/{userId} {
+      allow read, write: if signedIn() && request.auth.uid == userId;
+    }
+
+    /* -------------------------------------------------- household root */
+
+    match /households/{hid} {
+      allow read:   if isMember(hid);
+      // Anyone signed in may create a household; the batch that creates it
+      // also creates their MANAGER membership.
+      allow create: if signedIn();
+      allow update: if isManager(hid);
+      allow delete: if false;
+
+      /* ----------------------------------------------------- members */
+
+      match /members/{memberId} {
+        allow read: if isMember(hid);
+
+        // The creator's own first membership, established during creation.
+        allow create: if signedIn()
+                      && request.auth.uid == memberId
+                      && request.resource.data.role == 'MANAGER'
+                      && !exists(/databases/$(database)/documents/households/$(hid)/members/$(memberId));
+
+        // Managers may invite and manage others, but nobody may edit their own
+        // role — that is the one edit that would let an Observer promote
+        // themselves and walk through every other rule below.
+        allow update: if isManager(hid)
+                      && (memberId != request.auth.uid
+                          || request.resource.data.role == resource.data.role);
+
+        allow delete: if false;   // members are set to REMOVED, never deleted
+      }
+
+      /* ------------------------------------- append-only history logs */
+
+      // Stock events and bill payments are the household's audit trail. They
+      // may be added but never rewritten, so history cannot be revised after
+      // the fact (prompt0.md §6.8).
+
+      match /stockEvents/{eventId} {
+        allow read:   if isMember(hid);
+        allow create: if isManager(hid)
+                      && scopedCorrectly(hid)
+                      && request.resource.data.actorId == request.auth.uid;
+        allow update, delete: if false;
+      }
+
+      match /billPayments/{paymentId} {
+        allow read:   if isMember(hid);
+        allow create: if isManager(hid)
+                      && scopedCorrectly(hid)
+                      && request.resource.data.actorId == request.auth.uid;
+        allow update, delete: if false;
+      }
+
+      /* ---------------------------------------- managed collections */
+
+      match /categories/{docId} {
+        allow read: if isMember(hid);
+        allow write: if isManager(hid) && scopedCorrectly(hid);
+      }
+
+      match /stockItems/{docId} {
+        allow read: if isMember(hid);
+        allow write: if isManager(hid) && scopedCorrectly(hid);
+      }
+
+      match /bills/{docId} {
+        allow read: if isMember(hid);
+        allow write: if isManager(hid) && scopedCorrectly(hid);
+      }
+
+      match /deadlines/{docId} {
+        allow read: if isMember(hid);
+        allow write: if isManager(hid) && scopedCorrectly(hid);
+      }
+
+      match /insights/{docId} {
+        allow read: if isMember(hid);
+        allow write: if isManager(hid) && scopedCorrectly(hid);
+      }
+
+      match /settings/{docId} {
+        allow read: if isMember(hid);
+        allow write: if isManager(hid);
+      }
+
+      // Cached dashboard state. A cache, not a source of truth — it is
+      // recomputed on every mutation (prompt0.md §9.4).
+      match /summary/{docId} {
+        allow read: if isMember(hid);
+        allow write: if isManager(hid);
+      }
+    }
+
+    // Anything not matched above is denied. Never add a catch-all allow.
+  }
+}
