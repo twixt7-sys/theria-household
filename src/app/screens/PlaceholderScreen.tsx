@@ -12,7 +12,6 @@ import { SCREEN_TITLES, type Screen } from '../routes';
  */
 
 const PHASE: Partial<Record<Screen, string>> = {
-  deadlines: 'Phase 5',
   analysis: 'Phase 7',
   homi: 'Phase 8',
   settings: 'Phase 9',
@@ -24,6 +23,6 @@ export const PlaceholderScreen: React.FC<{ screen: Screen }> = ({ screen }) => (
   <EmptyState
     icon={Hammer}
     title={`${SCREEN_TITLES[screen]} is not built yet`}
-    description={`This screen arrives in ${PHASE[screen] ?? 'a later phase'}. The dashboard, Stock and Bills are live — everything else is still on the roadmap in prompt0.md.`}
+    description={`This screen arrives in ${PHASE[screen] ?? 'a later phase'}. The dashboard, Stock, Bills and Deadlines are live — everything else is still on the roadmap in prompt0.md.`}
   />
 );

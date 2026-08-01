@@ -25,7 +25,8 @@ household without being there, and currently has to ask by message and wait.
 | 2 | Domain model, repository, Firestore rules | ✅ |
 | 3 | Auth, household, roles, stock, live dashboard | ✅ |
 | 4 | Bills: CRUD, payments, recurrence, history, trends | ✅ |
-| 5–10 | Deadlines, analysis, Homi, polish | roadmap |
+| 5 | Deadlines: creation, recurrence, priority, countdowns | ✅ |
+| 6–10 | Dashboard completion, analysis, Homi, polish | roadmap |
 
 Routes not yet built render an honest placeholder naming their phase.
 
@@ -148,6 +149,7 @@ Tests concentrate on domain logic, where the risk actually is:
 - bill countdowns and idempotent recurrence generation
 - payment recording: settlement, backdating, and the next period opening once
 - bill amount trends — **including the refusal to call two periods a trend**
+- deadline status, countdown copy, and recurrence that opens each date once
 - dashboard priority ordering, and state outranking configured priority
 - Manager/Observer capabilities
 

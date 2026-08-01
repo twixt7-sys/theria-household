@@ -13,3 +13,12 @@ export const newId = (): string =>
  */
 export const billOccurrenceId = (billId: string, billingPeriod: string): string =>
   `${billId}-${billingPeriod}`;
+
+/**
+ * The same guarantee for a recurring deadline, keyed by the date it falls on.
+ *
+ * Completing quarterly servicing twice — a double tap, or two people at once —
+ * must not put two identical entries on the calendar.
+ */
+export const deadlineOccurrenceId = (deadlineId: string, date: string): string =>
+  `${deadlineId}-${date}`;

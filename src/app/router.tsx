@@ -14,6 +14,11 @@ const StockScreen = lazy(() =>
 const BillsScreen = lazy(() =>
   import('../features/bills/screens/BillsScreen').then((m) => ({ default: m.BillsScreen })),
 );
+const DeadlinesScreen = lazy(() =>
+  import('../features/deadlines/screens/DeadlinesScreen').then((m) => ({
+    default: m.DeadlinesScreen,
+  })),
+);
 const PlaceholderScreen = lazy(() =>
   import('./screens/PlaceholderScreen').then((m) => ({ default: m.PlaceholderScreen })),
 );
@@ -25,7 +30,7 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <DashboardScreen /> },
       { path: 'stock', element: <StockScreen /> },
-      { path: 'deadlines', element: <PlaceholderScreen screen="deadlines" /> },
+      { path: 'deadlines', element: <DeadlinesScreen /> },
       { path: 'analysis', element: <PlaceholderScreen screen="analysis" /> },
       { path: 'homi', element: <PlaceholderScreen screen="homi" /> },
       { path: 'bills', element: <BillsScreen /> },
