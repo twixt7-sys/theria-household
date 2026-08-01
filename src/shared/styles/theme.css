@@ -1,0 +1,217 @@
+@custom-variant dark (&:is(.dark *));
+
+/* Design tokens, inherited from Theria: Finance so the two apps stay visually
+   identical. The finance-only --income/--expense pair is replaced by the
+   household status ramp; everything else is unchanged. */
+
+:root {
+  /* Scales the rem grid on narrow phones to match a 386px-wide design frame;
+     >=386px viewports stay at 16px. This is what makes the layout feel right
+     on a phone — do not remove it. */
+  --font-size: clamp(13px, calc(100vw * 16 / 386), 16px);
+  --background: #F0FDF4;
+  --foreground: #052E16;
+  --card: #FFFFFF;
+  --card-foreground: #052E16;
+  --popover: #FFFFFF;
+  --popover-foreground: #052E16;
+  --primary: #10B981;
+  --primary-foreground: #FFFFFF;
+  --secondary: #059669;
+  --secondary-foreground: #FFFFFF;
+  --muted: #DCFCE7;
+  --muted-foreground: #6B7280;
+  --accent: #34D399;
+  --accent-foreground: #FFFFFF;
+  --destructive: #EF4444;
+  --destructive-foreground: #FFFFFF;
+  --border: rgba(16, 185, 129, 0.15);
+  --input: transparent;
+  --input-background: #FFFFFF;
+  --switch-background: #D1FAE5;
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --ring: #10B981;
+  --chart-1: #10B981;
+  --chart-2: #059669;
+  --chart-3: #34D399;
+  --chart-4: #F59E0B;
+  --chart-5: #EF4444;
+  --radius: 0.75rem;
+
+  /* Household status ramp. Colour communicates state and nothing else — see
+     prompt0.md §5.3. --status-unknown is the honest colour for an item with
+     too little history to forecast; it stops the UI implying a prediction it
+     cannot actually make. */
+  --status-good: #10B981;
+  --status-good-soft: rgba(16, 185, 129, 0.12);
+  --status-warning: #F59E0B;
+  --status-warning-soft: rgba(245, 158, 11, 0.12);
+  --status-critical: #EF4444;
+  --status-critical-soft: rgba(239, 68, 68, 0.12);
+  --status-info: #3B82F6;
+  --status-info-soft: rgba(59, 130, 246, 0.12);
+  --status-unknown: #6B7280;
+  --status-unknown-soft: rgba(107, 114, 128, 0.12);
+
+  /* Splash shell — always dark; decoupled from app light/dark tokens */
+  --splash-canvas: #050807;
+  --splash-foreground: #ffffff;
+  --splash-grid-line: rgba(255, 255, 255, 0.04);
+  --splash-radial-glow: rgba(16, 185, 129, 0.18);
+  --splash-pool-emerald: rgba(16, 185, 129, 0.07);
+  --splash-pool-teal: rgba(13, 148, 136, 0.06);
+}
+
+.dark {
+  --background: #0A0F0D;
+  --foreground: #E8F5E9;
+  --card: #1A2420;
+  --card-foreground: #E8F5E9;
+  --popover: #1A2420;
+  --popover-foreground: #E8F5E9;
+  --primary: #10B981;
+  --primary-foreground: #FFFFFF;
+  --secondary: #059669;
+  --secondary-foreground: #FFFFFF;
+  --muted: #2D3832;
+  --muted-foreground: #9CA3AF;
+  --accent: #34D399;
+  --accent-foreground: #FFFFFF;
+  --destructive: #EF4444;
+  --destructive-foreground: #FFFFFF;
+  --border: rgba(16, 185, 129, 0.2);
+  --input: rgba(16, 185, 129, 0.1);
+  --input-background: #2D3832;
+  --ring: #10B981;
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --chart-1: #10B981;
+  --chart-2: #059669;
+  --chart-3: #34D399;
+  --chart-4: #F59E0B;
+  --chart-5: #EF4444;
+
+  --status-good: #34D399;
+  --status-good-soft: rgba(52, 211, 153, 0.14);
+  --status-warning: #FBBF24;
+  --status-warning-soft: rgba(251, 191, 36, 0.14);
+  --status-critical: #F87171;
+  --status-critical-soft: rgba(248, 113, 113, 0.14);
+  --status-info: #60A5FA;
+  --status-info-soft: rgba(96, 165, 250, 0.14);
+  --status-unknown: #9CA3AF;
+  --status-unknown-soft: rgba(156, 163, 175, 0.14);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-input-background: var(--input-background);
+  --color-switch-background: var(--switch-background);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --color-status-good: var(--status-good);
+  --color-status-good-soft: var(--status-good-soft);
+  --color-status-warning: var(--status-warning);
+  --color-status-warning-soft: var(--status-warning-soft);
+  --color-status-critical: var(--status-critical);
+  --color-status-critical-soft: var(--status-critical-soft);
+  --color-status-info: var(--status-info);
+  --color-status-info-soft: var(--status-info-soft);
+  --color-status-unknown: var(--status-unknown);
+  --color-status-unknown-soft: var(--status-unknown-soft);
+
+  --color-splash-canvas: var(--splash-canvas);
+  --color-splash-foreground: var(--splash-foreground);
+}
+
+@layer base {
+  .app-page-background {
+    background-color: var(--background);
+    background-image: var(--app-background-image, none);
+    background-size: var(--app-background-size, auto);
+    background-position: var(--app-background-position, center);
+    background-repeat: var(--app-background-repeat, no-repeat);
+    background-attachment: fixed;
+  }
+
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  html {
+    font-size: var(--font-size);
+  }
+
+  h1 {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  h2 {
+    font-size: var(--text-xl);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  h3 {
+    font-size: var(--text-lg);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  h4 {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  label {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  button {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  input {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-normal);
+    line-height: 1.5;
+  }
+}
