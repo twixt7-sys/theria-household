@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Plus, Receipt } from 'lucide-react';
+import { Plus, Receipt, WifiOff } from 'lucide-react';
 import { buildBillView } from '../../../core/domain/bills';
 import type { Bill, BillStatus, BillView } from '../../../core/domain/types';
 import { useHousehold } from '../../../core/state/HouseholdContext';
@@ -38,7 +38,7 @@ const Group: React.FC<{ title: string; count: number; children: React.ReactNode 
 );
 
 export const BillsScreen: React.FC = () => {
-  const { phase, household, data } = useHousehold();
+  const { phase, household, data, error: householdError } = useHousehold();
   const { save, pay, archive, canWrite, canPay } = useBillActions();
 
   const [error, setError] = useState<string | null>(null);
@@ -72,6 +72,21 @@ export const BillsScreen: React.FC = () => {
     : null;
 
   if (phase === 'loading') return <LoadingState />;
+
+  if (phase === 'error') {
+    return (
+      <EmptyState
+        icon={WifiOff}
+        title="We could not load your bills"
+        description={householdError ?? 'Check your connection and try again.'}
+        action={
+          <Button variant="outline" onClick={() => window.location.reload()}>
+            Try again
+          </Button>
+        }
+      />
+    );
+  }
 
   const run = (work: Promise<unknown>) => {
     setError(null);
