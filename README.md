@@ -24,7 +24,8 @@ household without being there, and currently has to ask by message and wait.
 | 1 | Scaffold, design tokens, shell, routing | ✅ |
 | 2 | Domain model, repository, Firestore rules | ✅ |
 | 3 | Auth, household, roles, stock, live dashboard | ✅ |
-| 4–10 | Bills, deadlines, analysis, Homi, polish | roadmap |
+| 4 | Bills: CRUD, payments, recurrence, history, trends | ✅ |
+| 5–10 | Deadlines, analysis, Homi, polish | roadmap |
 
 Routes not yet built render an honest placeholder naming their phase.
 
@@ -72,6 +73,8 @@ unit-tested — the AI never computes, it only phrases.
 | `core/domain/priority.ts` | Transparent scoring that composes the dashboard |
 | `core/domain/stock.ts` · `consumption.ts` | Levels, thresholds, usage rates, forecasts |
 | `core/domain/bills.ts` | Countdowns, status, idempotent recurrence |
+| `core/domain/billTrends.ts` | Amount history, and what may honestly be claimed about it |
+| `core/domain/dates.ts` | Calendar dates that never pass through UTC |
 | `core/domain/permissions.ts` | Manager/Observer capabilities (UX layer) |
 | `firestore.rules` | Manager/Observer enforcement (security layer) |
 
@@ -143,6 +146,8 @@ Tests concentrate on domain logic, where the risk actually is:
 - packaged-quantity totals and repackaging after a partial change
 - consumption rates — **including the refusal to estimate on thin evidence**
 - bill countdowns and idempotent recurrence generation
+- payment recording: settlement, backdating, and the next period opening once
+- bill amount trends — **including the refusal to call two periods a trend**
 - dashboard priority ordering, and state outranking configured priority
 - Manager/Observer capabilities
 

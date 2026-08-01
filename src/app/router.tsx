@@ -11,6 +11,9 @@ import { DashboardScreen } from './screens/DashboardScreen';
 const StockScreen = lazy(() =>
   import('../features/stock/screens/StockScreen').then((m) => ({ default: m.StockScreen })),
 );
+const BillsScreen = lazy(() =>
+  import('../features/bills/screens/BillsScreen').then((m) => ({ default: m.BillsScreen })),
+);
 const PlaceholderScreen = lazy(() =>
   import('./screens/PlaceholderScreen').then((m) => ({ default: m.PlaceholderScreen })),
 );
@@ -25,7 +28,7 @@ export const router = createBrowserRouter([
       { path: 'deadlines', element: <PlaceholderScreen screen="deadlines" /> },
       { path: 'analysis', element: <PlaceholderScreen screen="analysis" /> },
       { path: 'homi', element: <PlaceholderScreen screen="homi" /> },
-      { path: 'bills', element: <PlaceholderScreen screen="bills" /> },
+      { path: 'bills', element: <BillsScreen /> },
       { path: 'settings', element: <PlaceholderScreen screen="settings" /> },
       { path: 'profile', element: <PlaceholderScreen screen="profile" /> },
       { path: 'notifications', element: <PlaceholderScreen screen="notifications" /> },
