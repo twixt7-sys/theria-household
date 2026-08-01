@@ -1,4 +1,5 @@
 import type { IsoDate, StockEvent, StockItem, StockView } from './types';
+import { toIsoDate } from './dates';
 import { stockPercentage, stockStatus } from './stock';
 
 /**
@@ -64,8 +65,9 @@ export function estimatedDepletionDate(
   now: Date = new Date(),
 ): IsoDate | null {
   if (daysRemaining === null) return null;
-  const date = new Date(now.getTime() + daysRemaining * MS_PER_DAY);
-  return date.toISOString().slice(0, 10);
+  // Local calendar date: "runs out on the 14th" means the 14th here, not the
+  // 13th because the household happens to live east of Greenwich.
+  return toIsoDate(new Date(now.getTime() + daysRemaining * MS_PER_DAY));
 }
 
 /**

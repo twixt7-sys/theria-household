@@ -1,3 +1,4 @@
+import { MS_PER_DAY, daysBetween, fromIsoDate, toIsoDate } from './dates';
 import { billOccurrenceId } from './ids';
 import type {
   Bill,
@@ -13,17 +14,9 @@ import type {
  * stored — a stored "3 days left" is wrong by tomorrow (prompt0.md §6.7).
  */
 
-const MS_PER_DAY = 86_400_000;
-
-/** Midnight local time, so "days until" counts calendar days, not 24h blocks. */
-const startOfDay = (date: Date): Date =>
-  new Date(date.getFullYear(), date.getMonth(), date.getDate());
-
 /** Whole calendar days from today to `dueDate`. Negative once overdue. */
 export function daysUntilDue(dueDate: IsoDate, now: Date = new Date()): number {
-  const due = startOfDay(new Date(`${dueDate}T00:00:00`));
-  const today = startOfDay(now);
-  return Math.round((due.getTime() - today.getTime()) / MS_PER_DAY);
+  return daysBetween(now, fromIsoDate(dueDate));
 }
 
 export function isPaid(bill: Bill, payments: BillPayment[]): boolean {
@@ -103,7 +96,7 @@ const addMonths = (date: Date, months: number): Date => {
 
 /** The due date of the occurrence following `from`. */
 export function nextDueDate(recurrence: Recurrence, from: IsoDate): IsoDate {
-  const base = new Date(`${from}T00:00:00`);
+  const base = fromIsoDate(from);
 
   const next = (() => {
     switch (recurrence.frequency) {
@@ -118,7 +111,7 @@ export function nextDueDate(recurrence: Recurrence, from: IsoDate): IsoDate {
     }
   })();
 
-  return next.toISOString().slice(0, 10);
+  return toIsoDate(next);
 }
 
 /** `YYYY-MM` billing period for a due date. */
