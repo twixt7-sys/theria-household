@@ -9,99 +9,99 @@
      >=386px viewports stay at 16px. This is what makes the layout feel right
      on a phone — do not remove it. */
   --font-size: clamp(13px, calc(100vw * 16 / 386), 16px);
-  --background: #F0FDF4;
-  --foreground: #052E16;
-  --card: #FFFFFF;
-  --card-foreground: #052E16;
-  --popover: #FFFFFF;
-  --popover-foreground: #052E16;
-  --primary: #10B981;
+  --background: #FFF7EE;
+  --foreground: #3F2618;
+  --card: #FFFDF9;
+  --card-foreground: #3F2618;
+  --popover: #FFFDF9;
+  --popover-foreground: #3F2618;
+  --primary: #C97A4D;
   --primary-foreground: #FFFFFF;
-  --secondary: #059669;
+  --secondary: #A85E3A;
   --secondary-foreground: #FFFFFF;
-  --muted: #DCFCE7;
-  --muted-foreground: #6B7280;
-  --accent: #34D399;
+  --muted: #F3E0CF;
+  --muted-foreground: #7B5B42;
+  --accent: #E8748C;
   --accent-foreground: #FFFFFF;
-  --destructive: #EF4444;
+  --destructive: #C2495F;
   --destructive-foreground: #FFFFFF;
-  --border: rgba(16, 185, 129, 0.15);
+  --border: rgba(201, 122, 77, 0.2);
   --input: transparent;
-  --input-background: #FFFFFF;
-  --switch-background: #D1FAE5;
+  --input-background: #FFFDF9;
+  --switch-background: #F7E0D0;
   --font-weight-medium: 500;
   --font-weight-normal: 400;
-  --ring: #10B981;
-  --chart-1: #10B981;
-  --chart-2: #059669;
-  --chart-3: #34D399;
-  --chart-4: #F59E0B;
-  --chart-5: #EF4444;
+  --ring: #C97A4D;
+  --chart-1: #C97A4D;
+  --chart-2: #A85E3A;
+  --chart-3: #E8748C;
+  --chart-4: #F4A261;
+  --chart-5: #C2495F;
   --radius: 0.75rem;
 
   /* Household status ramp. Colour communicates state and nothing else — see
      prompt0.md §5.3. --status-unknown is the honest colour for an item with
      too little history to forecast; it stops the UI implying a prediction it
      cannot actually make. */
-  --status-good: #10B981;
-  --status-good-soft: rgba(16, 185, 129, 0.12);
-  --status-warning: #F59E0B;
-  --status-warning-soft: rgba(245, 158, 11, 0.12);
-  --status-critical: #EF4444;
-  --status-critical-soft: rgba(239, 68, 68, 0.12);
-  --status-info: #3B82F6;
-  --status-info-soft: rgba(59, 130, 246, 0.12);
-  --status-unknown: #6B7280;
-  --status-unknown-soft: rgba(107, 114, 128, 0.12);
+  --status-good: #7A9A6E;
+  --status-good-soft: rgba(122, 154, 110, 0.14);
+  --status-warning: #D98C3A;
+  --status-warning-soft: rgba(217, 140, 58, 0.14);
+  --status-critical: #C2495F;
+  --status-critical-soft: rgba(194, 73, 95, 0.12);
+  --status-info: #7F8F82;
+  --status-info-soft: rgba(127, 143, 130, 0.12);
+  --status-unknown: #8C7A63;
+  --status-unknown-soft: rgba(140, 122, 99, 0.12);
 
   /* Splash shell — always dark; decoupled from app light/dark tokens */
-  --splash-canvas: #050807;
-  --splash-foreground: #ffffff;
-  --splash-grid-line: rgba(255, 255, 255, 0.04);
-  --splash-radial-glow: rgba(16, 185, 129, 0.18);
-  --splash-pool-emerald: rgba(16, 185, 129, 0.07);
-  --splash-pool-teal: rgba(13, 148, 136, 0.06);
+  --splash-canvas: #1A140F;
+  --splash-foreground: #FFF7EE;
+  --splash-grid-line: rgba(255, 247, 238, 0.04);
+  --splash-radial-glow: rgba(201, 122, 77, 0.18);
+  --splash-pool-emerald: rgba(201, 122, 77, 0.07);
+  --splash-pool-teal: rgba(127, 143, 130, 0.06);
 }
 
 .dark {
-  --background: #0A0F0D;
-  --foreground: #E8F5E9;
-  --card: #1A2420;
-  --card-foreground: #E8F5E9;
-  --popover: #1A2420;
-  --popover-foreground: #E8F5E9;
-  --primary: #10B981;
-  --primary-foreground: #FFFFFF;
-  --secondary: #059669;
-  --secondary-foreground: #FFFFFF;
-  --muted: #2D3832;
-  --muted-foreground: #9CA3AF;
-  --accent: #34D399;
-  --accent-foreground: #FFFFFF;
-  --destructive: #EF4444;
+  --background: #1A140F;
+  --foreground: #F8EEE4;
+  --card: #241A14;
+  --card-foreground: #F8EEE4;
+  --popover: #241A14;
+  --popover-foreground: #F8EEE4;
+  --primary: #D59666;
+  --primary-foreground: #1A140F;
+  --secondary: #B66A43;
+  --secondary-foreground: #FFF9F3;
+  --muted: #3A2A21;
+  --muted-foreground: #C9A98E;
+  --accent: #E8748C;
+  --accent-foreground: #FFF7FA;
+  --destructive: #C2495F;
   --destructive-foreground: #FFFFFF;
-  --border: rgba(16, 185, 129, 0.2);
-  --input: rgba(16, 185, 129, 0.1);
-  --input-background: #2D3832;
-  --ring: #10B981;
+  --border: rgba(213, 150, 102, 0.25);
+  --input: rgba(213, 150, 102, 0.12);
+  --input-background: #2E221C;
+  --ring: #D59666;
   --font-weight-medium: 500;
   --font-weight-normal: 400;
-  --chart-1: #10B981;
-  --chart-2: #059669;
-  --chart-3: #34D399;
-  --chart-4: #F59E0B;
-  --chart-5: #EF4444;
+  --chart-1: #D59666;
+  --chart-2: #B66A43;
+  --chart-3: #E8748C;
+  --chart-4: #F4A261;
+  --chart-5: #C2495F;
 
-  --status-good: #34D399;
-  --status-good-soft: rgba(52, 211, 153, 0.14);
-  --status-warning: #FBBF24;
-  --status-warning-soft: rgba(251, 191, 36, 0.14);
-  --status-critical: #F87171;
-  --status-critical-soft: rgba(248, 113, 113, 0.14);
-  --status-info: #60A5FA;
-  --status-info-soft: rgba(96, 165, 250, 0.14);
-  --status-unknown: #9CA3AF;
-  --status-unknown-soft: rgba(156, 163, 175, 0.14);
+  --status-good: #8DAA7D;
+  --status-good-soft: rgba(141, 170, 125, 0.14);
+  --status-warning: #D98C3A;
+  --status-warning-soft: rgba(217, 140, 58, 0.14);
+  --status-critical: #E8748C;
+  --status-critical-soft: rgba(232, 116, 140, 0.16);
+  --status-info: #8E9A84;
+  --status-info-soft: rgba(142, 154, 132, 0.14);
+  --status-unknown: #C9A98E;
+  --status-unknown-soft: rgba(201, 169, 142, 0.14);
 }
 
 @theme inline {
