@@ -7,11 +7,15 @@ export type BuddyMood = 'happy' | 'neutral' | 'concerned';
  *
  * Where Terry is a resting hexagon (flat top, points out to the sides), Hana
  * stands: her points are on the vertical axis, which makes her read as a little
- * house rather than a coin. The chimney and ribbon are what carry the rest —
- * she is a home, and homes are looked after.
+ * house rather than a coin. The points are deliberately blunt and the body
+ * squat — a sharp, tall hexagon reads as a gem, not a home.
  *
+ * Chimney on the right, ribbon on the left, so the two never crowd each other.
  * Light brown by design, fixed rather than themed, so she stays herself under
  * any accent colour — the same rule Terry follows with his emerald.
+ *
+ * Flat colour throughout: highlights are rounded squares at low opacity rather
+ * than gradients, which keeps her readable at 24px and in either theme.
  *
  * Placeholder art: swap this SVG for the final character when it exists.
  */
@@ -27,22 +31,23 @@ export const HanaFace: React.FC<{ mood?: BuddyMood; className?: string }> = ({
       }
       @keyframes theria-hana-look {
         0%, 40%, 100% { transform: translateX(0); }
-        46%, 60% { transform: translateX(1.3px); }
-        66%, 82% { transform: translateX(-1.1px); }
+        46%, 60% { transform: translateX(1.4px); }
+        66%, 82% { transform: translateX(-1.2px); }
         88% { transform: translateX(0); }
       }
       @keyframes theria-hana-smoke {
-        0% { transform: translateY(0) scale(0.7); opacity: 0; }
-        25% { opacity: 0.55; }
-        100% { transform: translateY(-9px) scale(1.25); opacity: 0; }
+        0% { transform: translate(0, 0) scale(0.55); opacity: 0; }
+        18% { opacity: 0.65; }
+        70% { opacity: 0.3; }
+        100% { transform: translate(1.5px, -6.5px) scale(1.25); opacity: 0; }
       }
       @keyframes theria-hana-ribbon {
         0%, 100% { transform: rotate(-4deg); }
-        50% { transform: rotate(5deg); }
+        50% { transform: rotate(6deg); }
       }
       @keyframes theria-hana-blush {
-        0%, 100% { opacity: 0.45; }
-        50% { opacity: 0.72; }
+        0%, 100% { opacity: 0.5; }
+        50% { opacity: 0.8; }
       }
       .theria-hana-eyes {
         animation: theria-hana-blink 4.6s ease-in-out infinite;
@@ -51,74 +56,122 @@ export const HanaFace: React.FC<{ mood?: BuddyMood; className?: string }> = ({
       }
       .theria-hana-pupils { animation: theria-hana-look 7.4s ease-in-out infinite; }
       .theria-hana-ribbon {
-        animation: theria-hana-ribbon 3.6s ease-in-out infinite;
-        transform-origin: 50px 26px;
+        animation: theria-hana-ribbon 3.4s ease-in-out infinite;
+        transform-box: fill-box;
+        transform-origin: center;
       }
-      .theria-hana-blush { animation: theria-hana-blush 5.4s ease-in-out infinite; }
-      .theria-hana-puff { animation: theria-hana-smoke 3.4s ease-in-out infinite; }
-      .theria-hana-puff-2 { animation-delay: 1.15s; }
-      .theria-hana-puff-3 { animation-delay: 2.3s; }
+      .theria-hana-blush { animation: theria-hana-blush 5.2s ease-in-out infinite; }
+      /* fill-box is load-bearing: without it the puffs scale about the SVG
+         origin and fling themselves off the canvas instead of drifting up. */
+      .theria-hana-puff {
+        animation: theria-hana-smoke 3s ease-out infinite;
+        transform-box: fill-box;
+        transform-origin: center;
+      }
+      .theria-hana-puff-2 { animation-delay: 1.05s; }
+      .theria-hana-puff-3 { animation-delay: 2.1s; }
     `}</style>
 
-    {/* chimney smoke — little puffs drifting up, because someone is home */}
-    <g fill="#E7D3BE">
-      <circle className="theria-hana-puff" cx="22" cy="14" r="2.1" />
-      <circle className="theria-hana-puff theria-hana-puff-2" cx="23.4" cy="14" r="1.7" />
-      <circle className="theria-hana-puff theria-hana-puff-3" cx="21" cy="14" r="1.4" />
+    {/* chimney — squat and wide so it reads as a chimney, not a bottle neck.
+        Drawn before the body, so the roof edge buries its base. */}
+    <g stroke="#8E5F3D" strokeWidth="1.4" strokeLinejoin="round">
+      <rect x="47.8" y="18" width="8.4" height="9" rx="1.8" fill="#A9704B" />
+      <rect x="46.2" y="15.2" width="11.6" height="4" rx="1.9" fill="#C08A62" />
     </g>
 
-    {/* chimney, tucked against the upper-left slope */}
-    <g>
-      <rect x="18.4" y="15.5" width="7.2" height="11" rx="2.1" fill="#A9704B" />
-      <rect x="17.2" y="14" width="9.6" height="3.6" rx="1.8" fill="#C08A62" />
+    {/* smoke — little puffs drifting up and away from the cap */}
+    <g fill="#E4CDB4">
+      <circle className="theria-hana-puff" cx="51.5" cy="12.6" r="2" />
+      <circle className="theria-hana-puff theria-hana-puff-2" cx="53.4" cy="12.2" r="1.6" />
+      <circle className="theria-hana-puff theria-hana-puff-3" cx="50.1" cy="13" r="1.3" />
     </g>
 
-    {/* body — a standing hexagon: points at top and bottom, flat sides */}
+    {/* body — a squat standing hexagon with blunt points and a sticker outline */}
     <path
-      d="M36 5 Q39 5 40.9 7.6 L57.6 20.4 Q60 22.3 60 25.4 L60 46.6 Q60 49.7 57.6 51.6 L40.9 64.4 Q39 67 36 67 Q33 67 31.1 64.4 L14.4 51.6 Q12 49.7 12 46.6 L12 25.4 Q12 22.3 14.4 20.4 L31.1 7.6 Q33 5 36 5 Z"
+      d="M29.5 17 Q36 13 42.5 17 L55.5 25.5 Q59 27.7 59 31.5 L59 42.5 Q59 46.3 55.5 48.5 L42.5 57 Q36 61 29.5 57 L16.5 48.5 Q13 46.3 13 42.5 L13 31.5 Q13 27.7 16.5 25.5 Z"
       fill="#C89B72"
+      stroke="#A97C52"
+      strokeWidth="2"
+      strokeLinejoin="round"
     />
-    {/* soft light on the upper slope, and a warm floor glow below */}
-    <ellipse cx="29" cy="24" rx="13" ry="7.5" fill="#FFFFFF" opacity="0.18" />
-    <ellipse cx="36" cy="54" rx="14" ry="8.5" fill="#FFF3E4" opacity="0.22" />
 
-    {/* ribbon at her collar, sways gently */}
-    <g className="theria-hana-ribbon">
-      <path d="M50 26 L44.5 22.6 L44.5 29.4 Z" fill="#E8748C" />
-      <path d="M50 26 L55.5 22.6 L55.5 29.4 Z" fill="#E8748C" />
-      <circle cx="50" cy="26" r="2.5" fill="#F498A9" />
+    {/* roof shine — rounded squares, never gradients */}
+    <rect
+      x="23.4"
+      y="23.4"
+      width="5.6"
+      height="5.6"
+      rx="2.3"
+      fill="#FFFFFF"
+      opacity="0.2"
+      transform="rotate(-15 26.2 26.2)"
+    />
+    <rect
+      x="30.8"
+      y="19.4"
+      width="2.9"
+      height="2.9"
+      rx="1.2"
+      fill="#FFFFFF"
+      opacity="0.16"
+      transform="rotate(-15 32.25 20.85)"
+    />
+
+    {/* ribbon — left side, outlined so it holds its shape against the body */}
+    <g className="theria-hana-ribbon" stroke="#C2495F" strokeWidth="1.1" strokeLinejoin="round">
+      <path d="M21.5 28 L15.9 24.4 L15.9 31.6 Z" fill="#E8748C" />
+      <path d="M21.5 28 L27.1 24.4 L27.1 31.6 Z" fill="#E8748C" />
+      <circle cx="21.5" cy="28" r="2.5" fill="#F498A9" />
     </g>
 
-    {/* eyes — blink, and glance about now and then */}
+    {/* eyes — big and wide-set, one rounded-square glint at the top right */}
     <g className="theria-hana-eyes">
       <g className="theria-hana-pupils">
-        <circle cx="28" cy="38" r="4.3" fill="#3B2415" />
-        <circle cx="44" cy="38" r="4.3" fill="#3B2415" />
-        <circle cx="29.5" cy="36.5" r="1.45" fill="#FFFFFF" opacity="0.9" />
-        <circle cx="45.5" cy="36.5" r="1.45" fill="#FFFFFF" opacity="0.9" />
+        <circle cx="26.5" cy="35" r="5.2" fill="#3B2415" />
+        <circle cx="45.5" cy="35" r="5.2" fill="#3B2415" />
+        <rect x="27.1" y="31.1" width="2.7" height="2.7" rx="1.05" fill="#FFFFFF" opacity="0.95" />
+        <rect x="46.1" y="31.1" width="2.7" height="2.7" rx="1.05" fill="#FFFFFF" opacity="0.95" />
       </g>
     </g>
 
     {mood === 'concerned' && (
       <g stroke="#3B2415" strokeWidth="1.9" strokeLinecap="round" opacity="0.85">
-        <path d="M23.5 31.8 L31 33.6" fill="none" />
-        <path d="M48.5 31.8 L41 33.6" fill="none" />
+        <path d="M21.6 29 L29 26.8" fill="none" />
+        <path d="M50.4 29 L43 26.8" fill="none" />
       </g>
     )}
 
     <g className="theria-hana-blush">
-      <circle cx="21.5" cy="45" r="2.7" fill="#F08FA0" />
-      <circle cx="50.5" cy="45" r="2.7" fill="#F08FA0" />
+      <ellipse cx="19.5" cy="42" rx="3.9" ry="2.7" fill="#E8455E" />
+      <ellipse cx="52.5" cy="42" rx="3.9" ry="2.7" fill="#E8455E" />
     </g>
 
     {mood === 'happy' && (
-      <path d="M29 46.5 Q36 53 43 46.5" stroke="#3B2415" strokeWidth="2.3" strokeLinecap="round" fill="none" />
+      <path
+        d="M31 44.5 Q36 50 41 44.5"
+        stroke="#3B2415"
+        strokeWidth="2.3"
+        strokeLinecap="round"
+        fill="none"
+      />
     )}
     {mood === 'neutral' && (
-      <path d="M31.5 48 Q36 50.8 40.5 48" stroke="#3B2415" strokeWidth="2.3" strokeLinecap="round" fill="none" />
+      <path
+        d="M32 45.5 Q36 48 40 45.5"
+        stroke="#3B2415"
+        strokeWidth="2.3"
+        strokeLinecap="round"
+        fill="none"
+      />
     )}
     {mood === 'concerned' && (
-      <path d="M30.5 50 Q36 45.8 41.5 50" stroke="#3B2415" strokeWidth="2.3" strokeLinecap="round" fill="none" />
+      <path
+        d="M31 47.5 Q36 43.5 41 47.5"
+        stroke="#3B2415"
+        strokeWidth="2.3"
+        strokeLinecap="round"
+        fill="none"
+      />
     )}
   </svg>
 );
