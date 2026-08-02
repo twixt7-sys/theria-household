@@ -1,11 +1,14 @@
 import React, { useMemo, useState } from 'react';
 import { PackageOpen } from 'lucide-react';
 import { useNavigate } from 'react-router';
+import { buildCategorySummaries } from '../../core/domain/categories';
 import { composeDashboard } from '../../core/domain/priority';
 import { useHousehold } from '../../core/state/HouseholdContext';
 import { useStockActions } from '../../features/stock/hooks/useStockActions';
 import { CalendarCard } from '../../features/dashboard/components/CalendarCard';
+import { CategorySummaryCard } from '../../features/dashboard/components/CategorySummaryCard';
 import { HouseholdStatusCard } from '../../features/dashboard/components/HouseholdStatusCard';
+import { QuickActions } from '../../features/dashboard/components/QuickActions';
 import { StockCard } from '../../features/dashboard/components/StockCard';
 import { BillCard } from '../../features/dashboard/components/BillCard';
 import { DeadlineCard } from '../../features/dashboard/components/DeadlineCard';
@@ -31,6 +34,11 @@ export const DashboardScreen: React.FC = () => {
   const [actionError, setActionError] = useState<string | null>(null);
 
   const cards = useMemo(() => composeDashboard(status), [status]);
+
+  const categorySummaries = useMemo(
+    () => buildCategorySummaries(data.categories, data.stockItems),
+    [data.categories, data.stockItems],
+  );
 
   if (phase === 'loading') return <LoadingState />;
 
@@ -76,6 +84,16 @@ export const DashboardScreen: React.FC = () => {
         <HouseholdStatusCard status={status} />
       </div>
 
+      {/* Only for Managers: an Observer cannot add anything, and offering the
+          door is worse than not showing it. */}
+      {canAdjust && hasAnything && (
+        <QuickActions
+          onAddStock={() => navigate(pathFor('stock'))}
+          onAddBill={() => navigate(pathFor('bills'))}
+          onAddDeadline={() => navigate(pathFor('deadlines'))}
+        />
+      )}
+
       {!hasAnything ? (
         <EmptyState
           icon={PackageOpen}
@@ -89,7 +107,11 @@ export const DashboardScreen: React.FC = () => {
         />
       ) : (
         <section aria-label="Household overview">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-2">
+          {/* Three columns from xl: a hero card spans two of them, so the most
+              urgent thing still leads the row instead of being one tile of
+              many. Card spans come from the priority engine (TheriaCard), not
+              from here. */}
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {cards.map((card) => {
               if (card.stock) {
                 return (
@@ -130,9 +152,14 @@ export const DashboardScreen: React.FC = () => {
       )}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <CategorySummaryCard
+          summaries={categorySummaries}
+          onOpen={() => navigate(pathFor('stock'))}
+        />
         <RecentChanges changes={status.recentChanges} />
-        <HomiStrip summary={status.summary} onOpen={() => navigate(pathFor('homi'))} />
       </div>
+
+      <HomiStrip summary={status.summary} onOpen={() => navigate(pathFor('homi'))} />
     </div>
   );
 };

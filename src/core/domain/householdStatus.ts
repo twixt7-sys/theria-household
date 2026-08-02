@@ -1,7 +1,7 @@
 import { buildBillView, countdownLabel } from './bills';
 import { buildDeadlineView, deadlineCountdownLabel, isApproaching } from './deadlines';
 import { buildStockView } from './consumption';
-import { formatQuantity } from './units';
+import { formatCurrency, formatQuantity } from './units';
 import type {
   BillView,
   DeadlineView,
@@ -31,6 +31,8 @@ export interface StatusItem {
 
 export interface ChangeEntry {
   id: string;
+  /** Lets the UI pick an icon without re-deriving what kind of thing changed. */
+  kind: 'STOCK' | 'BILL' | 'DEADLINE';
   label: string;
   detail: string;
   at: IsoDateTime;
@@ -54,6 +56,8 @@ export interface StatusOptions {
   dueSoonDays?: number;
   deadlineLeadDays?: number;
   recentChangeCount?: number;
+  /** Household currency, for payment amounts in the change feed. */
+  currency?: string;
   now?: Date;
 }
 
@@ -111,6 +115,65 @@ function buildSummary(critical: number, attention: number): string {
   return `${parts.join(', ')}.`;
 }
 
+/**
+ * What has happened at home lately, across everything — not just stock.
+ *
+ * The overseas-family case is the whole point of this feed: "Rice +5 kg ·
+ * Electricity marked paid" answers "has anything happened?" before the question
+ * reaches a group chat (prompt0.md §1.2, §9.3). A feed that only knew about
+ * stock would answer half of it.
+ *
+ * Deadlines have no event log, so a completion is dated by `updatedAt`. That is
+ * approximate by construction — it moves if the record is edited later — and it
+ * is the honest best available rather than a fabricated timestamp.
+ */
+function buildRecentChanges(
+  data: HouseholdData,
+  limit: number,
+  currency: string,
+): ChangeEntry[] {
+  const stockById = new Map(data.stockItems.map((item) => [item.id, item]));
+  const billById = new Map(data.bills.map((bill) => [bill.id, bill]));
+
+  const stockChanges: ChangeEntry[] = data.stockEvents.map((event) => {
+    const item = stockById.get(event.itemId);
+    const unit = item?.unit ?? '';
+    const sign = event.delta > 0 ? '+' : '';
+    return {
+      id: event.id,
+      kind: 'STOCK',
+      label: item?.name ?? 'Item',
+      detail: `${sign}${formatQuantity(event.delta, unit)} · ${formatQuantity(
+        event.newQuantity,
+        unit,
+      )} now`,
+      at: event.timestamp,
+    };
+  });
+
+  const paymentChanges: ChangeEntry[] = data.billPayments.map((payment) => ({
+    id: payment.id,
+    kind: 'BILL',
+    label: billById.get(payment.billId)?.name ?? 'Bill',
+    detail: `marked paid · ${formatCurrency(payment.amount, currency)}`,
+    at: payment.paidAt,
+  }));
+
+  const deadlineChanges: ChangeEntry[] = data.deadlines
+    .filter((deadline) => deadline.active && deadline.status === 'DONE')
+    .map((deadline) => ({
+      id: `deadline-${deadline.id}`,
+      kind: 'DEADLINE',
+      label: deadline.title,
+      detail: 'marked done',
+      at: deadline.updatedAt,
+    }));
+
+  return [...stockChanges, ...paymentChanges, ...deadlineChanges]
+    .sort((a, b) => b.at.localeCompare(a.at))
+    .slice(0, limit);
+}
+
 export function computeHouseholdStatus(
   data: HouseholdData,
   options: StatusOptions = {},
@@ -119,6 +182,7 @@ export function computeHouseholdStatus(
     dueSoonDays = 3,
     deadlineLeadDays = 14,
     recentChangeCount = 6,
+    currency = 'PHP',
     now = new Date(),
   } = options;
 
@@ -157,24 +221,7 @@ export function computeHouseholdStatus(
       .map(deadlineItemLabel),
   ];
 
-  const stockName = new Map(data.stockItems.map((i) => [i.id, i]));
-  const recentChanges: ChangeEntry[] = [...data.stockEvents]
-    .sort((a, b) => b.timestamp.localeCompare(a.timestamp))
-    .slice(0, recentChangeCount)
-    .map((event) => {
-      const item = stockName.get(event.itemId);
-      const unit = item?.unit ?? '';
-      const sign = event.delta > 0 ? '+' : '';
-      return {
-        id: event.id,
-        label: item?.name ?? 'Item',
-        detail: `${sign}${formatQuantity(event.delta, unit)} · ${formatQuantity(
-          event.newQuantity,
-          unit,
-        )} now`,
-        at: event.timestamp,
-      };
-    });
+  const recentChanges = buildRecentChanges(data, recentChangeCount, currency);
 
   const overallStatus: OverallStatus =
     criticalItems.length > 0 ? 'CRITICAL' : attentionItems.length > 0 ? 'ATTENTION' : 'GOOD';

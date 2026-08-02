@@ -123,7 +123,12 @@ export const HouseholdProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
   const role = useMemo(() => roleOf(data.members, user?.id ?? null), [data.members, user?.id]);
 
-  const status = useMemo(() => computeHouseholdStatus(data), [data]);
+  // Currency reaches the status engine because the change feed formats payment
+  // amounts; without it a peso household reads its own history in dollars.
+  const status = useMemo(
+    () => computeHouseholdStatus(data, { currency: household?.currency }),
+    [data, household?.currency],
+  );
 
   const createHousehold = useCallback(
     async (name: string) => {

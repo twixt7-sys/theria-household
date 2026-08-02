@@ -1,7 +1,14 @@
 import React from 'react';
-import { History } from 'lucide-react';
+import { CalendarCheck, History, Package, Receipt, type LucideIcon } from 'lucide-react';
 import type { ChangeEntry } from '../../../core/domain/householdStatus';
 import { TheriaCard } from '../../../shared/components/TheriaCard';
+
+/** The feed carries stock, bills and deadlines, so each line says which it is. */
+const KIND_ICON: Record<ChangeEntry['kind'], LucideIcon> = {
+  STOCK: Package,
+  BILL: Receipt,
+  DEADLINE: CalendarCheck,
+};
 
 const relativeTime = (iso: string, now: Date): string => {
   const minutes = Math.round((now.getTime() - new Date(iso).getTime()) / 60_000);
@@ -36,17 +43,23 @@ export const RecentChanges: React.FC<{ changes: ChangeEntry[]; now?: Date }> = (
       </div>
 
       <ul className="space-y-2">
-        {changes.map((change) => (
-          <li key={change.id} className="flex items-baseline justify-between gap-3 text-xs">
-            <span className="min-w-0 flex-1 truncate">
-              <span className="font-medium text-foreground">{change.label}</span>{' '}
-              <span className="text-muted-foreground">{change.detail}</span>
-            </span>
-            <span className="shrink-0 text-[0.6875rem] text-muted-foreground">
-              {relativeTime(change.at, now)}
-            </span>
-          </li>
-        ))}
+        {changes.map((change) => {
+          const Icon = KIND_ICON[change.kind];
+          return (
+            <li key={change.id} className="flex items-center justify-between gap-3 text-xs">
+              <span className="flex min-w-0 flex-1 items-center gap-2">
+                <Icon size={12} className="shrink-0 text-muted-foreground" aria-hidden />
+                <span className="min-w-0 truncate">
+                  <span className="font-medium text-foreground">{change.label}</span>{' '}
+                  <span className="text-muted-foreground">{change.detail}</span>
+                </span>
+              </span>
+              <span className="shrink-0 text-[0.6875rem] text-muted-foreground">
+                {relativeTime(change.at, now)}
+              </span>
+            </li>
+          );
+        })}
       </ul>
     </TheriaCard>
   );
