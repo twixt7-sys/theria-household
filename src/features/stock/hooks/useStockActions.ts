@@ -45,12 +45,30 @@ export function useStockActions() {
     [can, put, user],
   );
 
+  /**
+   * Creates or updates an item.
+   *
+   * When an edit changes the counted quantity, a CORRECTION event is written
+   * alongside it: someone recounted the cupboard and the record was wrong, and
+   * that is exactly what CORRECTION means. Without it the level would jump with
+   * no author and no trace, and the consumption rate would be computed across a
+   * gap it cannot see (prompt0.md §6.8).
+   */
   const save = useCallback(
-    async (item: StockItem) => {
+    async (item: StockItem, previous?: StockItem) => {
       if (!can('stock:write')) throw new Error(refusalMessage('stock:write'));
-      await put('stockItems', { ...item, updatedAt: new Date().toISOString() });
+
+      const next = { ...item, updatedAt: new Date().toISOString() };
+
+      if (previous && previous.quantity !== next.quantity && user) {
+        const { event } = correctStock(previous, next.quantity, user.id);
+        await put('stockEvents', event);
+      }
+
+      await put('stockItems', next);
+      return next;
     },
-    [can, put],
+    [can, put, user],
   );
 
   /** Retire rather than delete — history stays intact (prompt0.md §6.8). */
@@ -62,5 +80,12 @@ export function useStockActions() {
     [can, put],
   );
 
-  return { adjust, correct, save, archive, canAdjust: can('stock:adjust') };
+  return {
+    adjust,
+    correct,
+    save,
+    archive,
+    canAdjust: can('stock:adjust'),
+    canWrite: can('stock:write'),
+  };
 }

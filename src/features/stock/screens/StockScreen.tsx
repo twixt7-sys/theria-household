@@ -1,16 +1,37 @@
 import React, { useMemo, useState } from 'react';
-import { PackageOpen, Search } from 'lucide-react';
+import { PackageOpen, Plus, Search, WifiOff } from 'lucide-react';
 import { buildStockView } from '../../../core/domain/consumption';
 import { formatDaysRemaining, formatQuantity } from '../../../core/domain/units';
-import type { Status } from '../../../core/domain/types';
+import type { StockItem, Status } from '../../../core/domain/types';
 import { useHousehold } from '../../../core/state/HouseholdContext';
 import { EmptyState } from '../../../shared/components/EmptyState';
+import { LoadingState } from '../../../shared/components/LoadingState';
 import { QuantityAdjuster } from '../../../shared/components/QuantityAdjuster';
 import { StatusBadge } from '../../../shared/components/StatusBadge';
 import { TheriaCard } from '../../../shared/components/TheriaCard';
+import { Button } from '../../../shared/components/ui/button';
 import { Input } from '../../../shared/components/ui/input';
 import { cn } from '../../../shared/lib/cn';
+import { StockFormDialog } from '../components/StockFormDialog';
 import { useStockActions } from '../hooks/useStockActions';
+
+/** The item's headline figures, identical whether or not it is tappable. */
+const ItemSummary: React.FC<{ view: ReturnType<typeof buildStockView> }> = ({ view }) => (
+  <>
+    <div className="flex items-center gap-2">
+      <p className="tabular text-lg font-semibold leading-none text-foreground">
+        {formatQuantity(view.item.quantity, view.item.unit)}
+      </p>
+      <StatusBadge status={view.status} />
+    </div>
+    <p className="mt-1 text-[0.6875rem] font-semibold uppercase tracking-wide text-muted-foreground">
+      {view.item.name}
+    </p>
+    <p className="mt-0.5 text-xs text-muted-foreground">
+      {formatDaysRemaining(view.estimatedDaysRemaining)}
+    </p>
+  </>
+);
 
 const FILTERS: Array<{ id: 'ALL' | Status; label: string }> = [
   { id: 'ALL', label: 'All' },
@@ -25,13 +46,15 @@ const FILTERS: Array<{ id: 'ALL' | Status; label: string }> = [
  * dashboard is where things get large.
  */
 export const StockScreen: React.FC = () => {
-  const { data } = useHousehold();
-  const { adjust, canAdjust } = useStockActions();
+  const { phase, data, error: householdError } = useHousehold();
+  const { adjust, save, canAdjust, canWrite } = useStockActions();
 
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<'ALL' | Status>('ALL');
   const [category, setCategory] = useState<string>('ALL');
   const [error, setError] = useState<string | null>(null);
+  const [formOpen, setFormOpen] = useState(false);
+  const [editing, setEditing] = useState<StockItem | null>(null);
 
   const views = useMemo(
     () =>
@@ -54,13 +77,60 @@ export const StockScreen: React.FC = () => {
 
   const categories = data.categories.filter((c) => c.active);
 
-  if (views.length === 0) {
+  if (phase === 'loading') return <LoadingState />;
+
+  if (phase === 'error') {
     return (
       <EmptyState
-        icon={PackageOpen}
-        title="Your household inventory is empty"
-        description="Add the things you actually run out of — rice, drinking water, LPG, soap — and Theria will start tracking how fast they go."
+        icon={WifiOff}
+        title="We could not load your stock"
+        description={householdError ?? 'Check your connection and try again.'}
+        action={
+          <Button variant="outline" onClick={() => window.location.reload()}>
+            Try again
+          </Button>
+        }
       />
+    );
+  }
+
+  const openCreate = () => {
+    setEditing(null);
+    setFormOpen(true);
+  };
+
+  const openEdit = (item: StockItem) => {
+    setEditing(item);
+    setFormOpen(true);
+  };
+
+  const form = (
+    <StockFormDialog
+      open={formOpen}
+      onOpenChange={setFormOpen}
+      item={editing}
+      onSave={(next, previous) => save(next, previous)}
+    />
+  );
+
+  if (views.length === 0) {
+    return (
+      <>
+        <EmptyState
+          icon={PackageOpen}
+          title="Your household inventory is empty"
+          description="Add the things you actually run out of — rice, drinking water, LPG, soap — and Theria will start tracking how fast they go."
+          action={
+            canWrite ? (
+              <Button onClick={openCreate}>
+                <Plus size={14} aria-hidden />
+                Add your first item
+              </Button>
+            ) : undefined
+          }
+        />
+        {form}
+      </>
     );
   }
 
@@ -82,22 +152,31 @@ export const StockScreen: React.FC = () => {
         </div>
       )}
 
-      <div className="relative">
-        <Search
-          size={15}
-          className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-          aria-hidden
-        />
-        <label htmlFor="stock-search" className="sr-only">
-          Search stock
-        </label>
-        <Input
-          id="stock-search"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search stock"
-          className="pl-9"
-        />
+      <div className="flex items-center gap-2">
+        <div className="relative flex-1">
+          <Search
+            size={15}
+            className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+            aria-hidden
+          />
+          <label htmlFor="stock-search" className="sr-only">
+            Search stock
+          </label>
+          <Input
+            id="stock-search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search stock"
+            className="pl-9"
+          />
+        </div>
+
+        {canWrite && (
+          <Button onClick={openCreate} className="shrink-0">
+            <Plus size={14} aria-hidden />
+            Add
+          </Button>
+        )}
       </div>
 
       <div className="flex flex-wrap gap-1.5" role="group" aria-label="Filter by status">
@@ -163,20 +242,22 @@ export const StockScreen: React.FC = () => {
             <li key={view.item.id}>
               <TheriaCard size="medium" className="sm:col-span-2">
                 <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2">
-                      <p className="tabular text-lg font-semibold leading-none text-foreground">
-                        {formatQuantity(view.item.quantity, view.item.unit)}
-                      </p>
-                      <StatusBadge status={view.status} />
+                  {/* Tapping the item opens its settings; the adjuster beside
+                      it stays a separate control, never a nested button. */}
+                  {canWrite ? (
+                    <button
+                      type="button"
+                      onClick={() => openEdit(view.item)}
+                      aria-label={`Edit ${view.item.name}`}
+                      className="min-w-0 rounded-lg text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    >
+                      <ItemSummary view={view} />
+                    </button>
+                  ) : (
+                    <div className="min-w-0">
+                      <ItemSummary view={view} />
                     </div>
-                    <p className="mt-1 text-[0.6875rem] font-semibold uppercase tracking-wide text-muted-foreground">
-                      {view.item.name}
-                    </p>
-                    <p className="mt-0.5 text-xs text-muted-foreground">
-                      {formatDaysRemaining(view.estimatedDaysRemaining)}
-                    </p>
-                  </div>
+                  )}
 
                   {canAdjust && (
                     <QuantityAdjuster
@@ -191,6 +272,8 @@ export const StockScreen: React.FC = () => {
           ))}
         </ul>
       )}
+
+      {form}
     </div>
   );
 };

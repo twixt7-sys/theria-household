@@ -21,6 +21,18 @@ import type { PaymentInput } from '../lib/payBill';
 const METHODS = ['Cash', 'GCash', 'Bank transfer', 'Card', 'Auto-debit', 'Over the counter'];
 
 /**
+ * The instant a payment happened, from a date field that has no time.
+ *
+ * A payment recorded today keeps the current time. Reading it as local
+ * midnight — which is what the date alone means — made a payment entered just
+ * now appear in the change feed as "11h ago", which is how it read in testing.
+ * Backdated payments keep local midnight, since the real time is unknown and
+ * midnight is the honest floor for that day.
+ */
+const paidAtFrom = (date: string, now: Date = new Date()): string =>
+  date === toIsoDate(now) ? now.toISOString() : fromIsoDate(date).toISOString();
+
+/**
  * Recording a payment.
  *
  * The amount defaults to what the bill said but stays editable, because the
@@ -69,8 +81,7 @@ export const PayBillDialog: React.FC<{
         amount: value,
         method,
         notes,
-        // A date with no time becomes local midnight, not UTC midnight.
-        paidAt: fromIsoDate(paidOn).toISOString(),
+        paidAt: paidAtFrom(paidOn),
       });
       onOpenChange(false);
     } catch (cause) {
