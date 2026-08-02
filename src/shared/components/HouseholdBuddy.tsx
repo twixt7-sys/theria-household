@@ -41,9 +41,11 @@ export const HanaFace: React.FC<{ mood?: BuddyMood; className?: string }> = ({
         70% { opacity: 0.3; }
         100% { transform: translate(1.5px, -6.5px) scale(1.25); opacity: 0; }
       }
+      /* Sways around a clockwise tilt, so the bow sits at a jaunty angle
+         rather than square on. */
       @keyframes theria-hana-ribbon {
-        0%, 100% { transform: rotate(-4deg); }
-        50% { transform: rotate(6deg); }
+        0%, 100% { transform: rotate(8deg); }
+        50% { transform: rotate(17deg); }
       }
       @keyframes theria-hana-blush {
         0%, 100% { opacity: 0.5; }
@@ -117,11 +119,14 @@ export const HanaFace: React.FC<{ mood?: BuddyMood; className?: string }> = ({
       transform="rotate(-15 32.25 20.85)"
     />
 
-    {/* ribbon — left side, outlined so it holds its shape against the body */}
+    {/* ribbon — left side, outlined so it holds its shape against the body.
+        Sits high on the slope like a bow clipped to the corner of her head;
+        the tilt comes from the sway keyframes rather than a transform, which
+        the animation would otherwise overwrite. */}
     <g className="theria-hana-ribbon" stroke="#C2495F" strokeWidth="1.1" strokeLinejoin="round">
-      <path d="M21.5 28 L15.9 24.4 L15.9 31.6 Z" fill="#E8748C" />
-      <path d="M21.5 28 L27.1 24.4 L27.1 31.6 Z" fill="#E8748C" />
-      <circle cx="21.5" cy="28" r="2.5" fill="#F498A9" />
+      <path d="M23 26.6 L18.4 23.6 L18.4 29.6 Z" fill="#E8748C" />
+      <path d="M23 26.6 L27.6 23.6 L27.6 29.6 Z" fill="#E8748C" />
+      <circle cx="23" cy="26.6" r="2.3" fill="#F498A9" />
     </g>
 
     {/* eyes — big and wide-set, one rounded-square glint at the top right */}
@@ -141,34 +146,38 @@ export const HanaFace: React.FC<{ mood?: BuddyMood; className?: string }> = ({
       </g>
     )}
 
+    {/* blush — tucked up under the outer corner of each eye, close enough to
+        read as cheeks rather than as two stray dots */}
     <g className="theria-hana-blush">
-      <ellipse cx="19.5" cy="42" rx="3.9" ry="2.7" fill="#E8455E" />
-      <ellipse cx="52.5" cy="42" rx="3.9" ry="2.7" fill="#E8455E" />
+      <ellipse cx="20.8" cy="41.4" rx="3.9" ry="2.7" fill="#E8455E" />
+      <ellipse cx="51.2" cy="41.4" rx="3.9" ry="2.7" fill="#E8455E" />
     </g>
 
+    {/* mouth — small and high, a little curve between the eyes: ( o ‿ o ).
+        A wide grin fights the eyes for the face; this leaves them the star. */}
     {mood === 'happy' && (
       <path
-        d="M31 44.5 Q36 50 41 44.5"
+        d="M33.7 42.6 Q36 45.4 38.3 42.6"
         stroke="#3B2415"
-        strokeWidth="2.3"
+        strokeWidth="2.1"
         strokeLinecap="round"
         fill="none"
       />
     )}
     {mood === 'neutral' && (
       <path
-        d="M32 45.5 Q36 48 40 45.5"
+        d="M34 43.2 Q36 44.7 38 43.2"
         stroke="#3B2415"
-        strokeWidth="2.3"
+        strokeWidth="2.1"
         strokeLinecap="round"
         fill="none"
       />
     )}
     {mood === 'concerned' && (
       <path
-        d="M31 47.5 Q36 43.5 41 47.5"
+        d="M33.9 44.6 Q36 42.2 38.1 44.6"
         stroke="#3B2415"
-        strokeWidth="2.3"
+        strokeWidth="2.1"
         strokeLinecap="round"
         fill="none"
       />
