@@ -123,6 +123,11 @@ service cloud.firestore {
         allow write: if isManager(hid) && scopedCorrectly(hid);
       }
 
+      match /tasks/{docId} {
+        allow read: if isMember(hid);
+        allow write: if isManager(hid) && scopedCorrectly(hid);
+      }
+
       match /insights/{docId} {
         allow read: if isMember(hid);
         allow write: if isManager(hid) && scopedCorrectly(hid);

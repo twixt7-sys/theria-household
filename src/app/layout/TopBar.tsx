@@ -1,26 +1,26 @@
 import React from 'react';
-import { Bell, CloudOff, Eye, LogOut, Settings, User } from 'lucide-react';
+import { Bell, CloudOff, Eye } from 'lucide-react';
 import { useNavigate } from 'react-router';
 import { useAuth } from '../../core/state/AuthContext';
 import { useHousehold } from '../../core/state/HouseholdContext';
-import { signOutUser } from '../../core/firebase/auth';
 import {
   TheriaBrandLogo,
   TheriaBrandWordmark,
 } from '../../shared/components/TheriaBrandLogo';
+import { ProfileMenuPanel } from '../../shared/components/ProfileMenuPanel';
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '../../shared/components/ui/dropdown-menu';
+import { useUi } from '../state/uiStore';
 import { SCREEN_TITLES, pathFor, type Screen } from '../routes';
 
 export const TopBar: React.FC<{ screen: Screen }> = ({ screen }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { household, role, status, isOffline } = useHousehold();
+  const { role, status, isOffline } = useHousehold();
+  const { sidebarOpen, setSidebarOpen } = useUi();
 
   const attentionCount = status.criticalItems.length + status.attentionItems.length;
 
@@ -28,7 +28,15 @@ export const TopBar: React.FC<{ screen: Screen }> = ({ screen }) => {
     <header className="sticky top-0 z-40 border-b border-border bg-card/90 pt-safe shadow-md backdrop-blur-md">
       <div className="mx-auto max-w-7xl px-3 sm:px-4 lg:px-6">
         <div className="flex items-center gap-2 py-1.5 sm:gap-3">
-          <div className="flex min-w-0 flex-1 items-center gap-2.5">
+          {/* The brand is the menu button, exactly as in Finance. */}
+          <button
+            type="button"
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            title="Menu"
+            aria-label="Open menu"
+            aria-expanded={sidebarOpen}
+            className="flex min-w-0 flex-1 items-center gap-2.5 rounded-lg p-1 transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
             <TheriaBrandLogo size="sm" />
             <div className="flex min-w-0 items-center gap-2">
               <TheriaBrandWordmark />
@@ -39,7 +47,7 @@ export const TopBar: React.FC<{ screen: Screen }> = ({ screen }) => {
                 {SCREEN_TITLES[screen]}
               </h1>
             </div>
-          </div>
+          </button>
 
           <div className="flex shrink-0 items-center gap-1.5">
             {/* Connection state is surfaced, never faked. An overseas user on a
@@ -96,25 +104,16 @@ export const TopBar: React.FC<{ screen: Screen }> = ({ screen }) => {
                   </span>
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" sideOffset={8} className="w-56 rounded-2xl">
-                <div className="px-2 py-1.5">
-                  <p className="truncate text-sm font-semibold">{user?.displayName}</p>
-                  <p className="truncate text-xs text-muted-foreground">{household?.name}</p>
-                </div>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onSelect={() => navigate(pathFor('profile'))}>
-                  <User size={14} className="mr-2" aria-hidden />
-                  Profile
-                </DropdownMenuItem>
-                <DropdownMenuItem onSelect={() => navigate(pathFor('settings'))}>
-                  <Settings size={14} className="mr-2" aria-hidden />
-                  Settings
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onSelect={() => void signOutUser()}>
-                  <LogOut size={14} className="mr-2" aria-hidden />
-                  Sign out
-                </DropdownMenuItem>
+              <DropdownMenuContent
+                align="end"
+                sideOffset={8}
+                className="w-auto overflow-hidden rounded-2xl border-border/50 p-0 shadow-xl"
+              >
+                <ProfileMenuPanel
+                  onViewProfile={() => navigate(pathFor('profile'))}
+                  onViewStock={() => navigate(pathFor('stock'))}
+                  onViewSettings={() => navigate(pathFor('settings'))}
+                />
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

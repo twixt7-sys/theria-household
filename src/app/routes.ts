@@ -1,4 +1,11 @@
-import { BarChart3, CalendarClock, Home, MessageCircleHeart, Package, type LucideIcon } from 'lucide-react';
+import {
+  BarChart3,
+  CalendarClock,
+  Home,
+  ListChecks,
+  Package,
+  type LucideIcon,
+} from 'lucide-react';
 
 /**
  * Screen ids double as URL segments, so they cannot be renamed casually.
@@ -9,8 +16,9 @@ export const SCREENS = [
   'deadlines',
   'stock',
   'analysis',
-  'homi',
+  'tasks',
   'bills',
+  'hana',
   'settings',
   'profile',
   'notifications',
@@ -32,8 +40,9 @@ export const SCREEN_TITLES: Record<Screen, string> = {
   deadlines: 'Deadlines',
   stock: 'Stock',
   analysis: 'Analysis',
-  homi: 'Homi',
+  tasks: 'Tasks',
   bills: 'Bills',
+  hana: 'Hana',
   settings: 'Settings',
   profile: 'Profile',
   notifications: 'Notifications',
@@ -44,14 +53,17 @@ export type NavItem = { id: Screen; icon: LucideIcon; label: string };
 /**
  * Five destinations with Home centred, so each wing holds two. Home is the
  * hexagon; it is not listed as a wing item.
+ *
+ * Hana is deliberately absent: she floats over every screen as a companion
+ * rather than sitting in the nav, which is what freed this slot for Tasks.
  */
 export const NAV_ITEMS: NavItem[] = [
   { id: 'deadlines', icon: CalendarClock, label: 'Deadlines' },
   { id: 'stock', icon: Package, label: 'Stock' },
   { id: 'home', icon: Home, label: 'Home' },
   { id: 'analysis', icon: BarChart3, label: 'Analysis' },
-  { id: 'homi', icon: MessageCircleHeart, label: 'Homi' },
+  { id: 'tasks', icon: ListChecks, label: 'Tasks' },
 ];
 
 /** Screens that manage their own scrolling instead of the page scrolling. */
-export const SCROLL_LOCK_SCREENS: readonly Screen[] = ['homi'];
+export const SCROLL_LOCK_SCREENS: readonly Screen[] = ['hana'];

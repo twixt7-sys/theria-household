@@ -43,6 +43,7 @@ const COLLECTIONS: CollectionKey[] = [
   'bills',
   'billPayments',
   'deadlines',
+  'tasks',
   'insights',
 ];
 

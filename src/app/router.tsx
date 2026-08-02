@@ -19,9 +19,20 @@ const DeadlinesScreen = lazy(() =>
     default: m.DeadlinesScreen,
   })),
 );
+const TasksScreen = lazy(() =>
+  import('../features/tasks/screens/TasksScreen').then((m) => ({ default: m.TasksScreen })),
+);
 const AnalysisScreen = lazy(() =>
   import('../features/analysis/screens/AnalysisScreen').then((m) => ({
     default: m.AnalysisScreen,
+  })),
+);
+const HanaScreen = lazy(() =>
+  import('../features/hana/screens/HanaScreen').then((m) => ({ default: m.HanaScreen })),
+);
+const SettingsScreen = lazy(() =>
+  import('../features/settings/screens/SettingsScreen').then((m) => ({
+    default: m.SettingsScreen,
   })),
 );
 const PlaceholderScreen = lazy(() =>
@@ -35,11 +46,12 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <DashboardScreen /> },
       { path: 'stock', element: <StockScreen /> },
-      { path: 'deadlines', element: <DeadlinesScreen /> },
-      { path: 'analysis', element: <AnalysisScreen /> },
-      { path: 'homi', element: <PlaceholderScreen screen="homi" /> },
       { path: 'bills', element: <BillsScreen /> },
-      { path: 'settings', element: <PlaceholderScreen screen="settings" /> },
+      { path: 'deadlines', element: <DeadlinesScreen /> },
+      { path: 'tasks', element: <TasksScreen /> },
+      { path: 'analysis', element: <AnalysisScreen /> },
+      { path: 'hana', element: <HanaScreen /> },
+      { path: 'settings', element: <SettingsScreen /> },
       { path: 'profile', element: <PlaceholderScreen screen="profile" /> },
       { path: 'notifications', element: <PlaceholderScreen screen="notifications" /> },
       { path: '*', element: <Navigate to="/" replace /> },

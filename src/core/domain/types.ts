@@ -178,6 +178,31 @@ export interface Deadline {
   updatedAt: IsoDateTime;
 }
 
+/**
+ * A small thing someone has to do.
+ *
+ * Deliberately lighter than a Deadline: a task has no countdown, no recurrence
+ * and no priority ranking on the dashboard. Deadlines are dates that matter;
+ * tasks are the errands around them ("buy rice on the way home"). Keeping them
+ * separate is what stops Deadlines drifting into the task manager §9.7 forbids.
+ */
+export interface HouseholdTask {
+  id: string;
+  householdId: string;
+  title: string;
+  notes: string;
+  /** Optional — a task may simply be "sometime". */
+  dueDate: IsoDate | null;
+  done: boolean;
+  /** Who it is for, as free text. Not a user reference: households are informal. */
+  assignedTo: string;
+  createdBy: string;
+  completedAt: IsoDateTime | null;
+  active: boolean;
+  createdAt: IsoDateTime;
+  updatedAt: IsoDateTime;
+}
+
 export interface Insight {
   id: string;
   householdId: string;
@@ -216,6 +241,7 @@ export interface HouseholdData {
   bills: Bill[];
   billPayments: BillPayment[];
   deadlines: Deadline[];
+  tasks: HouseholdTask[];
   insights: Insight[];
 }
 
@@ -231,6 +257,7 @@ export const EMPTY_HOUSEHOLD_DATA: HouseholdData = {
   bills: [],
   billPayments: [],
   deadlines: [],
+  tasks: [],
   insights: [],
 };
 

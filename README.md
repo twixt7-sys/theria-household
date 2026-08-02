@@ -28,7 +28,8 @@ household without being there, and currently has to ask by message and wait.
 | 5 | Deadlines: creation, recurrence, priority, countdowns | ✅ |
 | 6 | Dashboard: category summaries, change feed, quick actions | ✅ |
 | 7 | Analysis: consumption, forecasts, bill trends, insights | ✅ |
-| 8–10 | Homi, polish, production | roadmap |
+| 8 | Hana, the companion — plus shell chrome ported from Finance | ✅ |
+| 9–10 | Polish, production | roadmap |
 
 Routes not yet built render an honest placeholder naming their phase.
 
@@ -91,7 +92,7 @@ file is the actual boundary.
 ## Roles
 
 **Manager** — full mutation rights.
-**Observer** — read-only everywhere, including through Homi.
+**Observer** — read-only everywhere, including through Hana.
 
 Observers see the same dashboard, minus mutation controls. The UI should read
 as *observational*, never as disabled or broken.

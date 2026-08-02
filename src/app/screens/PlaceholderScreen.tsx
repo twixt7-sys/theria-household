@@ -12,8 +12,6 @@ import { SCREEN_TITLES, type Screen } from '../routes';
  */
 
 const PHASE: Partial<Record<Screen, string>> = {
-  homi: 'Phase 8',
-  settings: 'Phase 9',
   profile: 'Phase 9',
   notifications: 'Phase 9',
 };

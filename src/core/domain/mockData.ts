@@ -118,6 +118,21 @@ export function buildDemoHousehold(householdId: string, managerId: string): Hous
       },
     ],
 
+    tasks: [
+      {
+        id: newId(), householdId, title: 'Return the water containers',
+        notes: '', dueDate: date(2), done: false, assignedTo: '',
+        createdBy: managerId, completedAt: null,
+        active: true, createdAt: iso(-2), updatedAt: iso(-2),
+      },
+      {
+        id: newId(), householdId, title: 'Ask about the electricity rate',
+        notes: '', dueDate: null, done: true, assignedTo: '',
+        createdBy: managerId, completedAt: iso(-1),
+        active: true, createdAt: iso(-6), updatedAt: iso(-1),
+      },
+    ],
+
     insights: [],
   };
 }
