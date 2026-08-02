@@ -70,18 +70,34 @@ export function estimatedDepletionDate(
   return toIsoDate(new Date(now.getTime() + daysRemaining * MS_PER_DAY));
 }
 
+/** Below this, a window-on-window move is noise rather than a change. */
+export const MEANINGFUL_CONSUMPTION_CHANGE = 0.15;
+
+export interface ConsumptionComparison {
+  /** Total consumed in the most recent window. */
+  recent: number;
+  /** Total consumed in the window immediately before it. */
+  prior: number;
+  /** Fractional change from prior to recent. */
+  changePercent: number;
+  windowDays: number;
+}
+
 /**
- * Direction of travel, by comparing the most recent window against the one
- * before it. Needs two full windows, so it stays UNKNOWN for a while after an
- * item is created — which is correct.
+ * The most recent window against the one before it.
+ *
+ * Returns null rather than zero when there is nothing to compare against —
+ * "consumption fell 100%" is a very different claim from "we have not been
+ * watching long enough to say", and only one of them is true.
  */
-export function consumptionTrend(
+export function consumptionChange(
   events: StockEvent[],
   windowDays = 14,
   now: Date = new Date(),
-): StockView['trend'] {
+): ConsumptionComparison | null {
   const consumption = events.filter((e) => e.type === 'CONSUMPTION');
-  if (consumption.length < MIN_CONSUMPTION_EVENTS * 2) return 'UNKNOWN';
+  // Two windows need roughly twice the evidence one does.
+  if (consumption.length < MIN_CONSUMPTION_EVENTS * 2) return null;
 
   const recentStart = new Date(now.getTime() - windowDays * MS_PER_DAY);
   const priorStart = new Date(now.getTime() - windowDays * 2 * MS_PER_DAY);
@@ -97,12 +113,43 @@ export function consumptionTrend(
   const recent = sumIn(recentStart, now);
   const prior = sumIn(priorStart, recentStart);
 
-  if (prior <= 0) return 'UNKNOWN';
+  if (prior <= 0) return null;
 
-  const change = (recent - prior) / prior;
-  if (change > 0.15) return 'RISING';
-  if (change < -0.15) return 'FALLING';
+  return { recent, prior, changePercent: (recent - prior) / prior, windowDays };
+}
+
+/**
+ * Direction of travel. Needs two full windows, so it stays UNKNOWN for a while
+ * after an item is created — which is correct.
+ */
+export function consumptionTrend(
+  events: StockEvent[],
+  windowDays = 14,
+  now: Date = new Date(),
+): StockView['trend'] {
+  const change = consumptionChange(events, windowDays, now);
+  if (change === null) return 'UNKNOWN';
+
+  if (change.changePercent > MEANINGFUL_CONSUMPTION_CHANGE) return 'RISING';
+  if (change.changePercent < -MEANINGFUL_CONSUMPTION_CHANGE) return 'FALLING';
   return 'STEADY';
+}
+
+/**
+ * How long a full container typically lasts: "Drinking water typically lasts
+ * 9 days" (prompt0.md §9.8).
+ *
+ * Measured against the level the household actually keeps, not the maximum the
+ * cupboard could hold — the useful question is how long a normal restock lasts.
+ */
+export function typicalDurationDays(
+  item: Pick<StockItem, 'preferredQuantity' | 'maxQuantity'>,
+  rate: number | null,
+): number | null {
+  if (rate === null || rate <= 0) return null;
+  const full = item.preferredQuantity > 0 ? item.preferredQuantity : item.maxQuantity;
+  if (full <= 0) return null;
+  return full / rate;
 }
 
 /**

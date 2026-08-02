@@ -3,6 +3,7 @@ import { TrendingDown, TrendingUp } from 'lucide-react';
 import { billTrendFor, seriesKey } from '../../../core/domain/billTrends';
 import { formatCurrency } from '../../../core/domain/units';
 import type { Bill, BillPayment } from '../../../core/domain/types';
+import { TrendBars } from '../../../shared/components/TrendBars';
 import { cn } from '../../../shared/lib/cn';
 
 /**
@@ -49,7 +50,6 @@ export const BillHistory: React.FC<{
     );
   }
 
-  const max = Math.max(...points.map((p) => p.amount));
   const TrendIcon = trend.direction === 'FALLING' ? TrendingDown : TrendingUp;
 
   return (
@@ -69,27 +69,14 @@ export const BillHistory: React.FC<{
           </p>
         )}
 
-        <ul className="space-y-1.5">
-          {points.map((point, index) => {
-            const latest = index === points.length - 1;
-            return (
-              <li key={point.billId} className="flex items-center gap-2">
-                <span className="w-12 shrink-0 text-[0.6875rem] text-muted-foreground">
-                  {monthLabel(point.period)}
-                </span>
-                <span className="h-2 flex-1 overflow-hidden rounded-full bg-muted">
-                  <span
-                    className={cn('block h-full rounded-full', latest ? 'bg-primary' : 'bg-primary/40')}
-                    style={{ width: `${max > 0 ? (point.amount / max) * 100 : 0}%` }}
-                  />
-                </span>
-                <span className="tabular w-24 shrink-0 text-right text-[0.6875rem] text-foreground">
-                  {formatCurrency(point.amount, currency)}
-                </span>
-              </li>
-            );
-          })}
-        </ul>
+        <TrendBars
+          points={points.map((point) => ({
+            id: point.billId,
+            label: monthLabel(point.period),
+            value: point.amount,
+            valueLabel: formatCurrency(point.amount, currency),
+          }))}
+        />
       </section>
 
       {seriesPayments.length > 0 && (

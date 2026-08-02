@@ -27,7 +27,8 @@ household without being there, and currently has to ask by message and wait.
 | 4 | Bills: CRUD, payments, recurrence, history, trends | ✅ |
 | 5 | Deadlines: creation, recurrence, priority, countdowns | ✅ |
 | 6 | Dashboard: category summaries, change feed, quick actions | ✅ |
-| 7–10 | Analysis, Homi, polish, production | roadmap |
+| 7 | Analysis: consumption, forecasts, bill trends, insights | ✅ |
+| 8–10 | Homi, polish, production | roadmap |
 
 Routes not yet built render an honest placeholder naming their phase.
 
@@ -77,6 +78,7 @@ unit-tested — the AI never computes, it only phrases.
 | `core/domain/bills.ts` | Countdowns, status, idempotent recurrence |
 | `core/domain/billTrends.ts` | Amount history, and what may honestly be claimed about it |
 | `core/domain/categories.ts` | Category rollups — worst item sets the category's status |
+| `core/domain/insights.ts` | The insight engine — every claim has to be earned |
 | `core/domain/dates.ts` | Calendar dates that never pass through UTC |
 | `core/domain/permissions.ts` | Manager/Observer capabilities (UX layer) |
 | `firestore.rules` | Manager/Observer enforcement (security layer) |
@@ -155,6 +157,7 @@ Tests concentrate on domain logic, where the risk actually is:
 - category rollups, where one empty sack outranks nine full ones
 - the change feed across stock, bills and deadlines in one chronology
 - dashboard composition end to end, against the demo household
+- the insight engine — above all, its silence when a claim is not earned
 - dashboard priority ordering, and state outranking configured priority
 - Manager/Observer capabilities
 
