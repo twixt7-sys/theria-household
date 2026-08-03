@@ -13,7 +13,6 @@ import { StockCard } from '../../features/dashboard/components/StockCard';
 import { BillCard } from '../../features/dashboard/components/BillCard';
 import { DeadlineCard } from '../../features/dashboard/components/DeadlineCard';
 import { RecentChanges } from '../../features/dashboard/components/RecentChanges';
-import { HanaStrip } from '../../features/hana/components/HanaStrip';
 import { EmptyState } from '../../shared/components/EmptyState';
 import { LoadingState } from '../../shared/components/LoadingState';
 import { Button } from '../../shared/components/ui/button';
@@ -158,8 +157,6 @@ export const DashboardScreen: React.FC = () => {
         />
         <RecentChanges changes={status.recentChanges} />
       </div>
-
-      <HanaStrip summary={status.summary} onOpen={() => navigate(pathFor('hana'))} />
     </div>
   );
 };
